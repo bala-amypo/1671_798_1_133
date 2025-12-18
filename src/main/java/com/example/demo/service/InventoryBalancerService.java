@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.model.TransferSuggestion;
+import com.example.demo.entity.TransferSuggestion;
 import java.util.List;
 
 public interface InventoryBalancerService {
