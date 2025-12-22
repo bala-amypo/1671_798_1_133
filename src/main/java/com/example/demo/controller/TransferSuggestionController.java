@@ -2,11 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.TransferSuggestion;
 import com.example.demo.service.InventoryBalancerService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/suggestions")
+@Tag(name = "Transfer Suggestions")
 public class TransferSuggestionController {
 
     private final InventoryBalancerService balancerService;
