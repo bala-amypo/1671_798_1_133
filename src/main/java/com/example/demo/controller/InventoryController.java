@@ -2,7 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.InventoryRequest;
 import com.example.demo.entity.InventoryLevel;
-import com.example.demo.service.InventoryLevelService;
+import com.example.demo.service.InventoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/inventory")
 public class InventoryController {
 
-    private final InventoryLevelService inventoryService;
+    private final InventoryService inventoryService;
 
-    public InventoryController(InventoryLevelService inventoryService) {
+    public InventoryController(InventoryService inventoryService) {
         this.inventoryService = inventoryService;
     }
 
@@ -26,6 +27,7 @@ public class InventoryController {
                 req.getQuantity()
         );
 
-        return ResponseEntity.ok(saved);
+        // 🔥 FIX: must return 201 CREATED
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 }
