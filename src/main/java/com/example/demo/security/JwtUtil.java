@@ -1,51 +1,57 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "secret-key-mlib";
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+    // 256-bit secret (required for HS256)
+    private static final String SECRET_KEY =
+            "mysecretkeymysecretkeymysecretkeymysecretkey";
 
-    public String generateToken(Map<String, Object> claims, String username) {
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
 
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    }
+
+    public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String getUsername(String token) {
-        return getClaims(token).getSubject();
-    }
-
-    public boolean isTokenValid(String token, String username) {
-        return getUsername(token).equals(username) && !isExpired(token);
-    }
-
-    public long getExpirationMillis() {
-        return EXPIRATION;
-    }
-
-    private boolean isExpired(String token) {
-        return getClaims(token).getExpiration().before(new Date());
-    }
-
-    private Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET)
+    public Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String extractUsername(String token) {
+        return extractAllClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Number.class).longValue();
+    }
+
+    public boolean isTokenValid(String token, String email) {
+        return extractUsername(token).equals(email);
     }
 }
