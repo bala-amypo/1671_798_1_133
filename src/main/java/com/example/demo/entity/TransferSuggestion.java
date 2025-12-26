@@ -21,13 +21,12 @@ public class TransferSuggestion {
 
     private Integer suggestedQuantity;
     private String reason;
-
     private LocalDateTime generatedAt;
 
     @PrePersist
-    public void onCreate() {
+    public void prePersist() {
         generatedAt = LocalDateTime.now();
     }
 
-    // getters & setters
+    // getters and setters
 }

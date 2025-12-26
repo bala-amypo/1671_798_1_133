@@ -21,7 +21,8 @@ public class UserAccount {
 
     @PrePersist
     public void prePersist() {
-        createdAt = updatedAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
@@ -29,5 +30,6 @@ public class UserAccount {
         updatedAt = LocalDateTime.now();
     }
 
-    // getters & setters
+    // getters and setters
+    // (write all getters & setters in exam)
 }

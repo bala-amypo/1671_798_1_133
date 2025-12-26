@@ -19,5 +19,5 @@ public class DemandForecast {
     private Integer forecastedDemand;
     private LocalDate forecastDate;
 
-    // getters & setters
+    // getters and setters
 }

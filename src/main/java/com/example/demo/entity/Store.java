@@ -15,5 +15,5 @@ public class Store {
 
     private boolean active = true;
 
-    // getters & setters
+    // getters and setters
 }
