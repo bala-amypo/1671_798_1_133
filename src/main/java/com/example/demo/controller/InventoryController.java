@@ -36,13 +36,12 @@ public class InventoryController {
                 req.getQuantity()
         );
 
-        // 🔥 CRITICAL FIX:
-        // Reload entity so store & product are fully initialized
-        InventoryLevel reloaded =
+        // 🔥 Force full initialization for JSON response
+        InventoryLevel full =
                 inventoryRepo.findById(saved.getId()).orElse(saved);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(reloaded);
+                .status(HttpStatus.CREATED)   // 🔥 THIS IS THE KEY
+                .body(full);
     }
 }
