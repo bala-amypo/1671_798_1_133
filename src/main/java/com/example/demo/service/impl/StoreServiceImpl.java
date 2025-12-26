@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.Store;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.StoreRepository;
 import com.example.demo.service.StoreService;
@@ -12,30 +11,15 @@ import java.util.List;
 @Service
 public class StoreServiceImpl implements StoreService {
 
-    private final StoreRepository storeRepository;
+    private final StoreRepository storeRepo;
 
-    public StoreServiceImpl(StoreRepository storeRepository) {
-        this.storeRepository = storeRepository;
+    public StoreServiceImpl(StoreRepository storeRepo) {
+        this.storeRepo = storeRepo;
     }
 
     @Override
     public Store createStore(Store store) {
-        if (storeRepository.findByStoreName(store.getStoreName()) != null) {
-            throw new BadRequestException("Store name already exists");
-        }
-        store.setActive(true);
-        return storeRepository.save(store);
-    }
-
-    @Override
-    public Store getStoreById(Long id) {
-        return storeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Store not found"));
-    }
-
-    @Override
-    public List<Store> getAllStores() {
-        return storeRepository.findAll();
+        return storeRepo.save(store);
     }
 
     @Override
@@ -44,13 +28,25 @@ public class StoreServiceImpl implements StoreService {
         existing.setStoreName(store.getStoreName());
         existing.setAddress(store.getAddress());
         existing.setRegion(store.getRegion());
-        return storeRepository.save(existing);
+        existing.setActive(store.isActive());
+        return storeRepo.save(existing);
     }
 
     @Override
     public void deactivateStore(Long id) {
         Store store = getStoreById(id);
         store.setActive(false);
-        storeRepository.save(store);
+        storeRepo.save(store);
+    }
+
+    @Override
+    public Store getStoreById(Long id) {
+        return storeRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found"));
+    }
+
+    @Override
+    public List<Store> getAllStores() {
+        return storeRepo.findAll();
     }
 }
