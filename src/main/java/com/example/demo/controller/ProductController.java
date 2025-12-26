@@ -2,14 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Product;
 import com.example.demo.service.ProductService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@Tag(name = "Products")
 public class ProductController {
 
     private final ProductService productService;
@@ -19,17 +17,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product create(@RequestBody Product product) {
+    public Product createProduct(@RequestBody Product product) {
         return productService.createProduct(product);
     }
 
-    @GetMapping("/{id}")
-    public Product getById(@PathVariable Long id) {
-        return productService.getProductById(id);
-    }
-
     @GetMapping
-    public List<Product> getAll() {
+    public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
 }

@@ -2,14 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Store;
 import com.example.demo.service.StoreService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/stores")
-@Tag(name = "Stores")
 public class StoreController {
 
     private final StoreService storeService;
@@ -19,17 +17,12 @@ public class StoreController {
     }
 
     @PostMapping
-    public Store create(@RequestBody Store store) {
+    public Store createStore(@RequestBody Store store) {
         return storeService.createStore(store);
     }
 
-    @GetMapping("/{id}")
-    public Store getById(@PathVariable Long id) {
-        return storeService.getStoreById(id);
-    }
-
     @GetMapping
-    public List<Store> getAll() {
+    public List<Store> getAllStores() {
         return storeService.getAllStores();
     }
 }
