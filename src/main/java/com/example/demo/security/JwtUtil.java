@@ -33,8 +33,18 @@ public class JwtUtil {
                 .getBody();
     }
 
+    // REQUIRED BY FILTER
     public String extractUsername(String token) {
+        return getUsername(token);
+    }
+
+    // REQUIRED BY TESTS
+    public String getUsername(String token) {
         return extractAllClaims(token).getSubject();
+    }
+
+    public Long getExpirationMillis() {
+        return EXPIRATION_TIME;
     }
 
     public String extractRole(String token) {
@@ -47,6 +57,6 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, String email) {
-        return extractUsername(token).equals(email);
+        return getUsername(token).equals(email);
     }
 }
