@@ -1,7 +1,12 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+
 @Entity
 public class Product {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -11,4 +16,6 @@ public class Product {
     private String category;
 
     private boolean active = true;
+
+    // getters & setters
 }

@@ -1,7 +1,12 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+
 @Entity
 public class Store {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String storeName;
@@ -9,4 +14,6 @@ public class Store {
     private String region;
 
     private boolean active = true;
+
+    // getters & setters
 }

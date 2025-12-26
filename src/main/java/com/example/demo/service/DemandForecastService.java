@@ -1,14 +1,26 @@
 package com.example.demo.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.repository.DemandForecastRepository;
 import com.example.demo.entity.DemandForecast;
-
+import com.example.demo.exception.BadRequestException;
+import java.time.LocalDate;
 import java.util.List;
 
-public interface DemandForecastService {
+@Service
+public class DemandForecastService {
 
-    DemandForecast createForecast(DemandForecast forecast);
+    @Autowired
+    private DemandForecastRepository repo;
 
-    DemandForecast getForecast(Long storeId, Long productId);
+    public DemandForecast createForecast(DemandForecast f) {
+        if (f.getForecastDate().isBefore(LocalDate.now()))
+            throw new BadRequestException("Past date");
+        return repo.save(f);
+    }
 
-    List<DemandForecast> getForecastsForStore(Long storeId);
+    public List<DemandForecast> getForecastsForStore(Long id) {
+        return repo.findByStore_Id(id);
+    }
 }
