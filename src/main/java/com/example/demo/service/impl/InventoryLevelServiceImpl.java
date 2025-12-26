@@ -29,7 +29,7 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
     }
 
     // =========================================================
-    // ✅ METHOD REQUIRED BY TESTS
+    // REQUIRED BY TESTS
     // =========================================================
     @Override
     public InventoryLevel createOrUpdateInventory(InventoryLevel inventory) {
@@ -50,7 +50,7 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
     }
 
     // =========================================================
-    // ✅ ACTUAL UPSERT LOGIC
+    // UPSERT LOGIC
     // =========================================================
     @Override
     public InventoryLevel createOrUpdateInventory(Long storeId, Long productId, int quantity) {
@@ -68,6 +68,9 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
         return inventoryRepo
                 .findByStore_IdAndProduct_Id(storeId, productId)
                 .map(existing -> {
+                    // 🔥 FIX: reattach relations
+                    existing.setStore(store);
+                    existing.setProduct(product);
                     existing.setQuantity(quantity);
                     return inventoryRepo.save(existing);
                 })
