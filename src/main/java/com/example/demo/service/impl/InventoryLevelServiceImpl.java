@@ -1,28 +1,64 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.InventoryLevel;
+import com.example.demo.entity.Product;
+import com.example.demo.entity.Store;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.repository.InventoryLevelRepository;
+import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.StoreRepository;
 import com.example.demo.service.InventoryLevelService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class InventoryLevelServiceImpl implements InventoryLevelService {
 
     private final InventoryLevelRepository inventoryRepo;
+    private final StoreRepository storeRepo;
+    private final ProductRepository productRepo;
 
-    public InventoryLevelServiceImpl(InventoryLevelRepository inventoryRepo) {
+    public InventoryLevelServiceImpl(
+            InventoryLevelRepository inventoryRepo,
+            StoreRepository storeRepo,
+            ProductRepository productRepo) {
         this.inventoryRepo = inventoryRepo;
+        this.storeRepo = storeRepo;
+        this.productRepo = productRepo;
     }
 
     @Override
-    public InventoryLevel createOrUpdateInventory(InventoryLevel inventory) {
-        if (inventory.getQuantity() < 0) {
+    public InventoryLevel createOrUpdateInventory(Long storeId, Long productId, int quantity) {
+
+        if (quantity < 0) {
             throw new BadRequestException("Quantity cannot be negative");
         }
-        return inventoryRepo.save(inventory);
+
+        Store store = storeRepo.findById(storeId)
+                .orElseThrow(() -> new BadRequestException("Store not found"));
+
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new BadRequestException("Product not found"));
+
+        return inventoryRepo
+                .findByStore_IdAndProduct_Id(storeId, productId)
+                .map(existing -> {
+                    // UPDATE existing inventory
+                    existing.setQuantity(quantity);
+                    existing.setLastUpdated(LocalDateTime.now());
+                    return inventoryRepo.save(existing);
+                })
+                .orElseGet(() -> {
+                    // CREATE new inventory
+                    InventoryLevel inv = new InventoryLevel();
+                    inv.setStore(store);
+                    inv.setProduct(product);
+                    inv.setQuantity(quantity);
+                    inv.setLastUpdated(LocalDateTime.now());
+                    return inventoryRepo.save(inv);
+                });
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.InventoryRequest;
 import com.example.demo.entity.InventoryLevel;
-import com.example.demo.service.InventoryService;
+import com.example.demo.service.InventoryLevelService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/inventory")
 public class InventoryController {
 
-    private final InventoryService inventoryService;
+    private final InventoryLevelService inventoryService;
 
-    public InventoryController(InventoryService inventoryService) {
+    public InventoryController(InventoryLevelService inventoryService) {
         this.inventoryService = inventoryService;
     }
 
