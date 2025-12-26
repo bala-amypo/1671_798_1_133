@@ -28,6 +28,30 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
         this.productRepo = productRepo;
     }
 
+    // =========================================================
+    // ✅ METHOD REQUIRED BY TESTS
+    // =========================================================
+    @Override
+    public InventoryLevel createOrUpdateInventory(InventoryLevel inventory) {
+
+        if (inventory == null) {
+            throw new BadRequestException("Inventory cannot be null");
+        }
+
+        if (inventory.getStore() == null || inventory.getProduct() == null) {
+            throw new BadRequestException("Store and Product are required");
+        }
+
+        return createOrUpdateInventory(
+                inventory.getStore().getId(),
+                inventory.getProduct().getId(),
+                inventory.getQuantity()
+        );
+    }
+
+    // =========================================================
+    // ✅ ACTUAL UPSERT LOGIC
+    // =========================================================
     @Override
     public InventoryLevel createOrUpdateInventory(Long storeId, Long productId, int quantity) {
 
@@ -44,12 +68,10 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
         return inventoryRepo
                 .findByStore_IdAndProduct_Id(storeId, productId)
                 .map(existing -> {
-                    // UPDATE existing inventory
                     existing.setQuantity(quantity);
                     return inventoryRepo.save(existing);
                 })
                 .orElseGet(() -> {
-                    // CREATE new inventory
                     InventoryLevel inv = new InventoryLevel();
                     inv.setStore(store);
                     inv.setProduct(product);
