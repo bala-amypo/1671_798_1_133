@@ -68,18 +68,24 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
         return inventoryRepo
                 .findByStore_IdAndProduct_Id(storeId, productId)
                 .map(existing -> {
-                    // 🔥 FIX: reattach relations
+                    // UPDATE PATH
                     existing.setStore(store);
                     existing.setProduct(product);
                     existing.setQuantity(quantity);
                     return inventoryRepo.save(existing);
                 })
                 .orElseGet(() -> {
+                    // CREATE PATH (FINAL FIX)
                     InventoryLevel inv = new InventoryLevel();
                     inv.setStore(store);
                     inv.setProduct(product);
                     inv.setQuantity(quantity);
-                    return inventoryRepo.save(inv);
+
+                    InventoryLevel saved = inventoryRepo.save(inv);
+
+                    // 🔥 IMPORTANT: reload entity so tests see store & product
+                    return inventoryRepo.findById(saved.getId())
+                            .orElse(saved);
                 });
     }
 
