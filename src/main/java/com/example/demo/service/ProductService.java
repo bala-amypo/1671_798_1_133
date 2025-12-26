@@ -1,16 +1,36 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Product;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.ProductRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface ProductService {
+@Service
+public class ProductService {
 
-    Product createProduct(Product product);
+    @Autowired
+    private ProductRepository productRepo;
 
-    Product getProductById(Long id);
+    public Product createProduct(Product product) {
+        return productRepo.save(product);
+    }
 
-    List<Product> getAllProducts();
+    public void deactivateProduct(Long id) {
+        Product product = getProductById(id);
+        product.setActive(false);
+        productRepo.save(product);
+    }
 
-    void deactivateProduct(Long id);
+    public Product getProductById(Long id) {
+        return productRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    }
+
+    public List<Product> getAllProducts() {
+        return productRepo.findAll();
+    }
 }

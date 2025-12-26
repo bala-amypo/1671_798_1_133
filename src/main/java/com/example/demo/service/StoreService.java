@@ -1,18 +1,49 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Store;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.StoreRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-public interface StoreService {
+@Service
+public class StoreService {
 
-    Store createStore(Store store);
+    @Autowired
+    private StoreRepository storeRepo;
 
-    Store getStoreById(Long id);
+    public Store createStore(Store store) {
+        return storeRepo.save(store);
+    }
 
-    List<Store> getAllStores();
+    public Store updateStore(Long id, Store update) {
 
-    Store updateStore(Long id, Store store);
+        Store existing = storeRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found"));
 
-    void deactivateStore(Long id);
+        existing.setStoreName(update.getStoreName());
+        existing.setAddress(update.getAddress());
+        existing.setRegion(update.getRegion());
+        existing.setActive(update.isActive());
+
+        return storeRepo.save(existing);
+    }
+
+    public void deactivateStore(Long id) {
+        Store store = getStoreById(id);
+        store.setActive(false);
+        storeRepo.save(store);
+    }
+
+    public Store getStoreById(Long id) {
+        return storeRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found"));
+    }
+
+    public List<Store> getAllStores() {
+        return storeRepo.findAll();
+    }
 }
