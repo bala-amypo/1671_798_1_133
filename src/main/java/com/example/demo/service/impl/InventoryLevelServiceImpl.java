@@ -10,7 +10,6 @@ import com.example.demo.repository.StoreRepository;
 import com.example.demo.service.InventoryLevelService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -47,7 +46,6 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
                 .map(existing -> {
                     // UPDATE existing inventory
                     existing.setQuantity(quantity);
-                    existing.setLastUpdated(LocalDateTime.now());
                     return inventoryRepo.save(existing);
                 })
                 .orElseGet(() -> {
@@ -56,7 +54,6 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
                     inv.setStore(store);
                     inv.setProduct(product);
                     inv.setQuantity(quantity);
-                    inv.setLastUpdated(LocalDateTime.now());
                     return inventoryRepo.save(inv);
                 });
     }
