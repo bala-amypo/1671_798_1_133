@@ -7,6 +7,7 @@ import com.example.demo.exception.BadRequestException;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.AuthService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,10 +18,14 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserAccountRepository userRepo;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthServiceImpl(UserAccountRepository userRepo, JwtUtil jwtUtil) {
+    public AuthServiceImpl(UserAccountRepository userRepo,
+                           JwtUtil jwtUtil,
+                           PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -31,8 +36,8 @@ public class AuthServiceImpl implements AuthService {
 
         UserAccount user = new UserAccount();
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        user.setRole(dto.getRole());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRole(dto.getRole().toUpperCase());
 
         userRepo.save(user);
     }
@@ -42,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
         UserAccount user = userRepo.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new BadRequestException("Invalid credentials"));
 
-        if (!user.getPassword().equals(dto.getPassword())) {
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new BadRequestException("Invalid credentials");
         }
 
