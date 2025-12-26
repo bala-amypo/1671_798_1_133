@@ -27,7 +27,7 @@ public class InventoryController {
                 req.getQuantity()
         );
 
-        // 🔥 FIX: must return 201 CREATED
+        // 🔥 THIS IS THE MISSING PIECE
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 }
