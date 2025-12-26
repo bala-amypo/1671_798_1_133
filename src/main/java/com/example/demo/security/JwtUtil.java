@@ -1,25 +1,20 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
 @Component
 public class JwtUtil {
 
-    // 256-bit secret (required for HS256)
     private static final String SECRET_KEY =
             "mysecretkeymysecretkeymysecretkeymysecretkey";
 
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
-
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
-    }
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
 
     public String generateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
@@ -27,14 +22,13 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
     public Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
+        return Jwts.parser()
+                .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -44,11 +38,12 @@ public class JwtUtil {
     }
 
     public String extractRole(String token) {
-        return extractAllClaims(token).get("role", String.class);
+        return (String) extractAllClaims(token).get("role");
     }
 
     public Long extractUserId(String token) {
-        return extractAllClaims(token).get("userId", Number.class).longValue();
+        Object id = extractAllClaims(token).get("userId");
+        return ((Number) id).longValue();
     }
 
     public boolean isTokenValid(String token, String email) {
