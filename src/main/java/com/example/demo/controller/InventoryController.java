@@ -4,6 +4,7 @@ import com.example.demo.dto.InventoryRequest;
 import com.example.demo.entity.InventoryLevel;
 import com.example.demo.service.InventoryService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,10 @@ public class InventoryController {
         this.inventoryService = inventoryService;
     }
 
-    @PostMapping
+    @PostMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<InventoryLevel> createInventory(
             @RequestBody InventoryRequest req) {
 
@@ -27,7 +31,8 @@ public class InventoryController {
                 req.getQuantity()
         );
 
-        // 🔥 THIS IS THE MISSING PIECE
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(saved);
     }
 }
