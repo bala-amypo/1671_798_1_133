@@ -48,7 +48,8 @@ public class InventoryServiceImpl implements InventoryService {
                 .findByStoreIdAndProductId(storeId, productId)
                 .map(existing -> {
                     existing.setQuantity(quantity);
-                    return inventoryRepository.saveAndFlush(existing); // ✅ IMPORTANT
+                    InventoryLevel saved = inventoryRepository.saveAndFlush(existing);
+                    return inventoryRepository.findById(saved.getId()).orElse(saved);
                 })
                 .orElseGet(() -> {
                     InventoryLevel inventory = new InventoryLevel();
@@ -56,7 +57,8 @@ public class InventoryServiceImpl implements InventoryService {
                     inventory.setProduct(product);
                     inventory.setQuantity(quantity);
 
-                    return inventoryRepository.saveAndFlush(inventory); // ✅ IMPORTANT
+                    InventoryLevel saved = inventoryRepository.saveAndFlush(inventory);
+                    return inventoryRepository.findById(saved.getId()).orElse(saved);
                 });
     }
 }
