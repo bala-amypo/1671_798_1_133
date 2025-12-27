@@ -47,19 +47,16 @@ public class InventoryServiceImpl implements InventoryService {
         return inventoryRepository
                 .findByStoreIdAndProductId(storeId, productId)
                 .map(existing -> {
-                    // ✅ UPDATE EXISTING INVENTORY
                     existing.setQuantity(quantity);
-                    return inventoryRepository.saveAndFlush(existing);
+                    return inventoryRepository.saveAndFlush(existing); // ✅ IMPORTANT
                 })
                 .orElseGet(() -> {
-                    // ✅ CREATE NEW INVENTORY
                     InventoryLevel inventory = new InventoryLevel();
                     inventory.setStore(store);
                     inventory.setProduct(product);
                     inventory.setQuantity(quantity);
 
-                    // 🔥 IMPORTANT FIX: force ID generation
-                    return inventoryRepository.saveAndFlush(inventory);
+                    return inventoryRepository.saveAndFlush(inventory); // ✅ IMPORTANT
                 });
     }
 }
