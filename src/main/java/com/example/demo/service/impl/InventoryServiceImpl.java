@@ -49,7 +49,7 @@ public class InventoryServiceImpl implements InventoryService {
                 .map(existing -> {
                     // ✅ UPDATE EXISTING INVENTORY
                     existing.setQuantity(quantity);
-                    return inventoryRepository.save(existing);
+                    return inventoryRepository.saveAndFlush(existing);
                 })
                 .orElseGet(() -> {
                     // ✅ CREATE NEW INVENTORY
@@ -57,7 +57,9 @@ public class InventoryServiceImpl implements InventoryService {
                     inventory.setStore(store);
                     inventory.setProduct(product);
                     inventory.setQuantity(quantity);
-                    return inventoryRepository.save(inventory);
+
+                    // 🔥 IMPORTANT FIX: force ID generation
+                    return inventoryRepository.saveAndFlush(inventory);
                 });
     }
 }
