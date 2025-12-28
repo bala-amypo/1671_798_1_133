@@ -28,7 +28,9 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
         this.productRepo = productRepo;
     }
 
+    // =========================================================
     // REQUIRED BY TESTS
+    // =========================================================
     @Override
     public InventoryLevel createOrUpdateInventory(InventoryLevel inventory) {
 
@@ -47,7 +49,9 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
         );
     }
 
+    // =========================================================
     // UPSERT LOGIC
+    // =========================================================
     @Override
     public InventoryLevel createOrUpdateInventory(Long storeId, Long productId, int quantity) {
 
@@ -64,19 +68,24 @@ public class InventoryLevelServiceImpl implements InventoryLevelService {
         return inventoryRepo
                 .findByStore_IdAndProduct_Id(storeId, productId)
                 .map(existing -> {
+                    // UPDATE PATH
                     existing.setStore(store);
                     existing.setProduct(product);
                     existing.setQuantity(quantity);
-                    return inventoryRepo.saveAndFlush(existing);
+                    return inventoryRepo.save(existing);
                 })
                 .orElseGet(() -> {
+                    // CREATE PATH (FINAL FIX)
                     InventoryLevel inv = new InventoryLevel();
                     inv.setStore(store);
                     inv.setProduct(product);
                     inv.setQuantity(quantity);
 
-                    // 🔥 FINAL FIX: guarantees non-null ID
-                    return inventoryRepo.saveAndFlush(inv);
+                    InventoryLevel saved = inventoryRepo.save(inv);
+
+                    // 🔥 IMPORTANT: reload entity so tests see store & product
+                    return inventoryRepo.findById(saved.getId())
+                            .orElse(saved);
                 });
     }
 
