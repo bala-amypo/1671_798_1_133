@@ -16,7 +16,6 @@ public class Product {
     private String category;
     private boolean active = true;
 
-    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;
